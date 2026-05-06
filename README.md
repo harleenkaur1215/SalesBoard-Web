@@ -10,19 +10,24 @@
 ![Project](https://img.shields.io/badge/Project-Sales%20Analytics-blue)
 ![Region](https://img.shields.io/badge/Region-India-lightgrey)
 
+
 ---
+
 
 ## 🏷️ Topics
 
 `sales-dashboard` `data-analytics` `data-visualization`  
 `chartjs` `javascript` `html` `css` `dashboard`
 
+
 ---
 
 An interactive and visually modern **Sales Analytics Dashboard** built using **HTML, CSS, and JavaScript (Chart.js)**.  
 This dashboard provides insights into **sales, cost, profit, transactions, and product performance** across India.
 
+
 ---
+
 
 ## 🚀 Live Overview
 
@@ -158,7 +163,7 @@ Or simply double-click `index.html`
 
 ## Dashboard Screenshots
 
-### 🖼️1. `Image 1: Main Sales Dashboard – High-Level KPIs`
+### 🖼️`Image 1: Main Sales Dashboard – High-Level KPIs`
 <img width="800" height="420" alt="Screenshot 2026-04-30 215108" src="https://github.com/user-attachments/assets/693dfd38-0394-43f0-91e3-e47edfe935a9" />
 
 
@@ -188,7 +193,7 @@ All, Aadil Khan, Aarvi Gupta, Advika Joshi, Ajay Sharma, Roshan Kumar, Vijay Sin
 
 ---
 
-### 🖼️2. `Image 2: Supporting Analysis Dashboard 📈`
+### 🖼️`Image 2: Supporting Analysis Dashboard 📈`
 <img width="800" height="410" alt="Screenshot 2026-04-30 215124" src="https://github.com/user-attachments/assets/29d05589-53e9-4834-8efb-42dfc2b42b69" />
 
 
@@ -216,7 +221,7 @@ Intel, Dell, Nvidia, Western Digital, Acer, Gigabyte, Hynix, Seagate, MSI, Asus
 
 ---
 
-### 🖼️3. `Image 3: Filtered Dashboard View.`
+### 🖼️`Image 3: Filtered Dashboard View.`
 <img width="800" height="410" alt="Screenshot 2026-04-30 215207" src="https://github.com/user-attachments/assets/eb66b527-3d01-42be-b99a-3d8d25e8a97f" />
 
 
