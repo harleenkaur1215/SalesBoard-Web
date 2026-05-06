@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sales Dashboard 2024–2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: rgba(255,255,255,0.07);
+    --card: rgba(255,255,255,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper { position: relative; z-index: 1; padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #f1f5f9, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+  .badge {
+    background: rgba(59,130,246,0.15);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: #93c5fd;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Supervisor filter */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .filter-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
+  .filter-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: rgba(59,130,246,0.2);
+    border-color: var(--accent);
+    color: #93c5fd;
+  }
+  .filter-btn.active { box-shadow: 0 0 10px rgba(59,130,246,0.2); }
+
+  /* KPI row */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.3); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 14px 14px 0 0;
+  }
+  .kpi-card:nth-child(1)::before { background: var(--accent); }
+  .kpi-card:nth-child(2)::before { background: var(--accent5); }
+  .kpi-card:nth-child(3)::before { background: var(--accent3); }
+  .kpi-card:nth-child(4)::before { background: var(--accent4); }
+  .kpi-card:nth-child(5)::before { background: var(--accent2); }
+  .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .kpi-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .kpi-card:nth-child(1) .kpi-val { color: #60a5fa; }
+  .kpi-card:nth-child(2) .kpi-val { color: #f87171; }
+  .kpi-card:nth-child(3) .kpi-val { color: #34d399; }
+  .kpi-card:nth-child(4) .kpi-val { color: #fbbf24; }
+  .kpi-card:nth-child(5) .kpi-val { color: #22d3ee; }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* Chart grid */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .chart-grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .chart-card:hover { border-color: rgba(59,130,246,0.2); }
+  .chart-card.span2 { grid-column: span 2; }
+  .chart-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    border-radius: 2px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+  .leg-sq { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Supervisor table */
+  .sup-table { width: 100%; border-collapse: collapse; }
+  .sup-table tr { border-bottom: 1px solid var(--border); }
+  .sup-table tr:last-child { border-bottom: none; }
+  .sup-table td { padding: 8px 4px; font-size: 13px; }
+  .sup-name { color: var(--text); font-weight: 500; }
+  .sup-val { color: var(--muted); text-align: right; }
+  .sup-bar-wrap { width: 80px; }
+  .sup-bar-bg { background: rgba(255,255,255,0.06); border-radius: 4px; height: 5px; overflow: hidden; }
+  .sup-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+  /* Footer */
+  .footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .chart-grid2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .title { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-dot"></div>
+      <div>
+        <div class="title">Sales Dashboard</div>
+        <div class="subtitle">FY 2024 – 2025 · Computer Hardware · India</div>
+      </div>
+    </div>
+    <div class="badge">● Live Data</div>
+  </div>
+
+  <!-- Supervisor Filter -->
+  <div class="filter-bar">
+    <span class="filter-label">Supervisor:</span>
+    <button class="filter-btn active" onclick="setFilter(this,'all')">All</button>
+    <button class="filter-btn" onclick="setFilter(this,'aadil')">Aadil Khan</button>
+    <button class="filter-btn" onclick="setFilter(this,'aarvi')">Aarvi Gupta</button>
+    <button class="filter-btn" onclick="setFilter(this,'advika')">Advika Joshi</button>
+    <button class="filter-btn" onclick="setFilter(this,'ajay')">Ajay Sharma</button>
+    <button class="filter-btn" onclick="setFilter(this,'roshan')">Roshan Kumar</button>
+    <button class="filter-btn" onclick="setFilter(this,'vijay')">Vijay Singh</button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Sales</div><div class="kpi-val" id="kpi-sales">99M</div><div class="kpi-sub">₹ Indian Rupees</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Cost</div><div class="kpi-val" id="kpi-cost">76M</div><div class="kpi-sub">₹ Indian Rupees</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Profit</div><div class="kpi-val" id="kpi-profit">23M</div><div class="kpi-sub">₹ Indian Rupees</div></div>
+    <div class="kpi-card"><div class="kpi-label">Transactions</div><div class="kpi-val" id="kpi-tx">5.1K</div><div class="kpi-sub">Total orders</div></div>
+    <div class="kpi-card"><div class="kpi-label">Quantity</div><div class="kpi-val" id="kpi-qty">13K</div><div class="kpi-sub">Units sold</div></div>
+  </div>
+
+  <!-- Row 1: Category bar + Brand pie -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Quantity by Category</div>
+      <div style="position:relative;height:220px;">
+        <canvas id="catChart" role="img" aria-label="Bar chart quantity by category"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Sales by Brand</div>
+      <div class="legend" id="brandLegend"></div>
+      <div style="position:relative;height:180px;">
+        <canvas id="brandChart" role="img" aria-label="Pie chart sales by brand"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: State bar + Cost bar + Supervisors -->
+  <div class="chart-grid2" style="margin-top:16px;">
+    <div class="chart-card span2">
+      <div class="chart-title">Total Sales by State (Top 10)</div>
+      <div style="position:relative;height:200px;">
+        <canvas id="stateChart" role="img" aria-label="Bar chart sales by state"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cost by Brand</div>
+      <div style="position:relative;height:200px;">
+        <canvas id="costChart" role="img" aria-label="Bar chart cost by brand"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supervisor breakdown -->
+  <div class="chart-card" style="margin-top:16px;">
+    <div class="chart-title">Supervisor Performance</div>
+    <table class="sup-table">
+      <tr>
+        <td class="sup-name">Aadil Khan</td>
+        <td class="sup-val">₹16M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:80%"></div></div></td>
+        <td class="sup-val">860 txn</td>
+      </tr>
+      <tr>
+        <td class="sup-name">Aarvi Gupta</td>
+        <td class="sup-val">₹3M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:15%"></div></div></td>
+        <td class="sup-val">173 txn</td>
+      </tr>
+      <tr>
+        <td class="sup-name">Advika Joshi</td>
+        <td class="sup-val">₹18M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:90%"></div></div></td>
+        <td class="sup-val">920 txn</td>
+      </tr>
+      <tr>
+        <td class="sup-name">Ajay Sharma</td>
+        <td class="sup-val">₹15M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:75%"></div></div></td>
+        <td class="sup-val">819 txn</td>
+      </tr>
+      <tr>
+        <td class="sup-name">Roshan Kumar</td>
+        <td class="sup-val">₹22M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:100%"></div></div></td>
+        <td class="sup-val">1100 txn</td>
+      </tr>
+      <tr>
+        <td class="sup-name">Vijay Singh</td>
+        <td class="sup-val">₹25M</td>
+        <td class="sup-bar-wrap"><div class="sup-bar-bg"><div class="sup-bar-fill" style="width:100%"></div></div></td>
+        <td class="sup-val">1223 txn</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer">Sales Dashboard 2024–2025 · Computer Hardware · India · Built with Chart.js</div>
+</div>
+
+<script>
+const COLORS = ['#3b82f6','#f59e0b','#ef4444','#10b981','#8b5cf6','#06b6d4','#f97316','#ec4899','#84cc16','#a78bfa'];
+const gridC = 'rgba(255,255,255,0.05)';
+const tickC = '#64748b';
+
+const data = {
+  all:    { sales:'99M', cost:'76M', profit:'23M', tx:'5.1K', qty:'13K',
+    cats:[1843,1496,1450,1155,1142,1140,1119,1103,743,385,379,359,357],
+    brands:[18.89,16,14.34,13.21,8.11,6,5.93,5.5,4.87,2.97,4.15],
+    states:[7.8,5.1,3.9,3.2,2.8,2.4,1.9,1.7,1.2,0.9],
+    costs:[6,5.1,4.5,4,2.5,1.9,1.8,1.8,1.5,1,0.9]
+  },
+  aarvi:  { sales:'3M',  cost:'2M',  profit:'593K',tx:'173', qty:'419',
+    cats:[193,150,130,120,226,110,90,80,60,30,25,20,18],
+    brands:[17.68,17,13.76,13.69,8.27,7.6,5.73,5.1,5.01,2.79,3.67],
+    states:[1,0.5,0.4,0.3,0.25,0.2,0.18,0.15,0.1,0.08],
+    costs:[0.88,0.7,0.6,0.5,0.3,0.25,0.2,0.18,0.15,0.1,0.08]
+  },
+  advika: { sales:'18M', cost:'14M', profit:'4M', tx:'920', qty:'2.1K',
+    cats:[611,480,393,320,391,373,361,361,228,142,134,130,113],
+    brands:[19.11,16.1,14.5,12.8,8.05,6.2,6.12,5.7,4.56,3.07,3.77],
+    states:[2.2,1.5,1.2,1,0.9,0.8,0.7,0.6,0.5,0.4],
+    costs:[2.1,1.7,1.6,1.4,0.8,0.7,0.6,0.6,0.5,0.4,0.3]
+  },
+  ajay:   { sales:'15M', cost:'11M', profit:'4M', tx:'819', qty:'1.9K',
+    cats:[536,400,350,280,300,280,260,250,180,100,90,85,80],
+    brands:[19.11,16.1,14.5,12.8,8.05,6.2,6.12,5.7,4.56,3.07,3.77],
+    states:[2,1.3,1,0.9,0.8,0.7,0.6,0.5,0.4,0.3],
+    costs:[1.8,1.5,1.3,1.1,0.7,0.6,0.5,0.5,0.4,0.35,0.25]
+  },
+  aadil:  { sales:'16M', cost:'12M', profit:'4M', tx:'860', qty:'2K',
+    cats:[500,420,380,310,320,300,280,270,190,110,95,90,85],
+    brands:[18.5,16.5,14,13,8.2,6.1,6,5.6,4.9,3,4.2],
+    states:[2.1,1.4,1.1,0.95,0.85,0.75,0.65,0.55,0.45,0.35],
+    costs:[1.9,1.6,1.4,1.2,0.75,0.65,0.55,0.55,0.45,0.38,0.28]
+  },
+  roshan: { sales:'22M', cost:'17M', profit:'5M', tx:'1100', qty:'3K',
+    cats:[700,580,520,430,440,420,400,390,270,160,140,130,120],
+    brands:[18.89,16,14.34,13.21,8.11,6,5.93,5.5,4.87,2.97,4.17],
+    states:[3,2,1.6,1.4,1.2,1,0.9,0.8,0.6,0.5],
+    costs:[2.8,2.3,2,1.8,1.1,0.9,0.8,0.8,0.7,0.55,0.45]
+  },
+  vijay:  { sales:'25M', cost:'19M', profit:'6M', tx:'1223', qty:'3.5K',
+    cats:[800,650,580,480,490,470,440,430,300,175,155,145,130],
+    brands:[18.89,16,14.34,13.21,8.11,6,5.93,5.5,4.87,2.97,4.17],
+    states:[3.5,2.3,1.8,1.6,1.4,1.1,1,0.9,0.7,0.55],
+    costs:[3.2,2.6,2.3,2,1.2,1,0.9,0.9,0.75,0.6,0.5]
+  }
+};
+
+const catLabels = ['Monitor','Mouse','CPU','Graphic Card','Keyboard','Cabinet','HDD','SSD','RAM','MotherBoard','Comp. Case','NIC','Printer'];
+const brandLabels = ['Intel','Samsung','Dell','Nvidia','Western Digital','Acer','Gigabyte','Hynix','Seagate','Asus','Others'];
+const stateLabels = ['Maharashtra','Gujarat','Uttar Pradesh','Bihar','Delhi','Tamil Nadu','Tripura','Orissa','Sikkim','Chandigarh'];
+const costLabels = ['Intel','Samsung','Dell','Nvidia','Western','Acer','Gigabyte','Hynix','Seagate','MSI','Asus'];
+
+function buildLegend() {
+  const el = document.getElementById('brandLegend');
+  el.innerHTML = brandLabels.slice(0,6).map((l,i) =>
+    `<span class="leg"><span class="leg-sq" style="background:${COLORS[i]}"></span>${l}</span>`
+  ).join('');
+}
+buildLegend();
+
+const chartDefaults = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  animation: { duration: 600 }
+};
+
+const catChart = new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: catLabels,
+    datasets: [{ data: data.all.cats, backgroundColor: '#3b82f6', borderRadius: 4, hoverBackgroundColor: '#60a5fa' }]
+  },
+  options: { ...chartDefaults, scales: {
+    x: { ticks: { color: tickC, font: { size: 10 } }, grid: { display: false } },
+    y: { ticks: { color: tickC, font: { size: 10 }, callback: v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v }, grid: { color: gridC } }
+  }}
+});
+
+const brandChart = new Chart(document.getElementById('brandChart'), {
+  type: 'doughnut',
+  data: {
+    labels: brandLabels,
+    datasets: [{ data: data.all.brands, backgroundColor: COLORS, borderWidth: 2, borderColor: '#0a0e1a', hoverOffset: 6 }]
+  },
+  options: { ...chartDefaults, cutout: '55%',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.label+': '+ctx.raw.toFixed(1)+'%' } } }
+  }
+});
+
+const stateChart = new Chart(document.getElementById('stateChart'), {
+  type: 'bar',
+  data: {
+    labels: stateLabels,
+    datasets: [{ data: data.all.states, backgroundColor: '#10b981', borderRadius: 4, hoverBackgroundColor: '#34d399' }]
+  },
+  options: { ...chartDefaults, scales: {
+    x: { ticks: { color: tickC, font: { size: 10 } }, grid: { display: false } },
+    y: { ticks: { color: tickC, font: { size: 10 }, callback: v => v+'M' }, grid: { color: gridC } }
+  }}
+});
+
+const costChart = new Chart(document.getElementById('costChart'), {
+  type: 'bar',
+  data: {
+    labels: costLabels,
+    datasets: [{ data: data.all.costs, backgroundColor: '#f59e0b', borderRadius: 4, hoverBackgroundColor: '#fbbf24' }]
+  },
+  options: { ...chartDefaults, scales: {
+    x: { ticks: { color: tickC, font: { size: 10 } }, grid: { display: false } },
+    y: { ticks: { color: tickC, font: { size: 10 }, callback: v => v+'M' }, grid: { color: gridC } }
+  }}
+});
+
+function setFilter(btn, key) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = data[key] || data.all;
+  document.getElementById('kpi-sales').textContent = d.sales;
+  document.getElementById('kpi-cost').textContent = d.cost;
+  document.getElementById('kpi-profit').textContent = d.profit;
+  document.getElementById('kpi-tx').textContent = d.tx;
+  document.getElementById('kpi-qty').textContent = d.qty;
+  catChart.data.datasets[0].data = d.cats;
+  catChart.update();
+  brandChart.data.datasets[0].data = d.brands;
+  brandChart.update();
+  stateChart.data.datasets[0].data = d.states;
+  stateChart.update();
+  costChart.data.datasets[0].data = d.costs;
+  costChart.update();
+}
+</script>
+</body>
+</html>
